@@ -1,0 +1,15 @@
+{
+    "iso_file": "http://it.centos.contactlab.it/7/isos/x86_64/CentOS-7-x86_64-Everything-1804.iso",
+    "iso_checksum": "99723c8b87dcec21df8aed23de1eb810346d42cfd2a3fafafe70a68296053417",
+    "type": "sha256",
+    "non_gui": "false",
+    "ssh_username": "XXX",
+    "ssh_password": "XXX",
+    "vm_name": "XXX",
+    "payara_password": "XXX",
+    "payara_admin": "admin",
+    "payara_admin_password": "XXX",
+    "payara_home": "/opt/payara",
+    "hostname": "XXX",
+    "webup_release": "1.14.6"
+}

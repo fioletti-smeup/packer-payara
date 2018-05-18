@@ -1,0 +1,77 @@
+{
+    "builders": [
+        {
+            "type": "vmware-iso",
+            "vm_name": "{{user `vm_name`}}",
+            "iso_url": "{{user `iso_file`}}",
+            "iso_checksum": "{{user `iso_checksum`}}",
+            "iso_checksum_type": "{{user `type`}}",
+            "headless": "{{user `non_gui`}}",
+            "boot_wait": "5s",
+            "guest_os_type": "centos7-64",
+            "disk_size": 81920,
+            "output_directory": "output-vmware-iso",
+            "http_directory": "http",
+            "boot_command": [
+                "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>"
+            ],
+            "vmx_data": {
+                "memsize": "8192",
+                "numvcpus": "2"
+            },
+            "ssh_username": "{{user `ssh_username`}}",
+            "ssh_password": "{{user `ssh_password`}}",
+            "ssh_wait_timeout": "20m",
+            "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S shutdown -P now",
+            "format": "ova"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "echo '{{user `ssh_password`}}' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+            "inline": [
+                "yum -y --enablerepo=extras install epel-release",
+                "yum -y install open-vm-tools-10.1.10",
+                "yum -y install java-1.8.0-openjdk-headless-1.8.0.171",
+                "yum -y install wget-1.14",
+                "yum -y install unzip-6.0",
+                "yum -y install avahi-0.6.31",
+                "systemctl disable firewalld",
+                "systemctl stop firewalld",
+                "hostnamectl set-hostname {{user `hostname`}}",
+                "echo \"127.0.0.1  $(hostname)\" >> /etc/hosts",
+                "groupadd payara",
+                "useradd -g payara -s /bin/bash -p {{user `payara_password`}} -d {{user `payara_home`}} -m payara",
+                "wget http://central.maven.org/maven2/fish/payara/distributions/payara/5.181/payara-5.181.zip",
+                "unzip payara-5.181.zip -d {{user `payara_home`}}",
+                "{{user `payara_home`}}/payara5/bin/asadmin create-service --serviceuser payara production",
+                "echo 'AS_ADMIN_PASSWORD=' > old_passwordfile.txt",
+                "echo 'AS_ADMIN_NEWPASSWORD={{user `payara_admin_password`}}' >> old_passwordfile.txt",
+                "echo 'AS_ADMIN_PASSWORD={{user `payara_admin_password`}}' > passwordfile.txt",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile old_passwordfile.txt change-admin-password --domain_name production",
+                "{{user `payara_home`}}/payara5/bin/asadmin start-domain production",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt enable-secure-admin",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt delete-jvm-options -Xms2g:-Xmx2g",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt create-jvm-options -Xms4g:-Xmx4g:-server",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles='100'",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads=-1 configs.config.server-config.network-config.transports.transport.tcp.byte-buffer-type=HEAP",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.min-thread-pool-size=25 configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=350",
+                "wget https://mauer.smeup.com/nexus/content/repositories/releases/com/smeup/WebUP/{{user `webup_release`}}/WebUP-{{user `webup_release`}}.war",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt deploy --contextroot /WebUP WebUP-{{user `webup_release`}}.war",
+                "rm WebUP-{{user `webup_release`}}.war",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt stop-domain production",
+                "rm *passwordfile* payara-5.181.zip",
+                "chown -R payara.payara {{user `payara_home`}}/payara5"
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "inline": [
+                "/usr/lib/vmware-ovftool/ovftool output-vmware-iso/{{user `vm_name`}}.vmx {{user `vm_name`}}.ova"
+            ],
+            "type": "shell-local"
+        }
+    ]
+}
