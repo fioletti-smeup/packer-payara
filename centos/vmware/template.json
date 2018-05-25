@@ -9,7 +9,7 @@
             "headless": "{{user `non_gui`}}",
             "boot_wait": "5s",
             "guest_os_type": "centos7-64",
-            "disk_size": 81920,
+            "disk_size": 131072,
             "output_directory": "output-vmware-iso",
             "http_directory": "http",
             "boot_command": [
@@ -22,8 +22,7 @@
             "ssh_username": "{{user `ssh_username`}}",
             "ssh_password": "{{user `ssh_password`}}",
             "ssh_wait_timeout": "20m",
-            "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S shutdown -P now",
-            "format": "ova"
+            "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S shutdown -P now"
         }
     ],
     "provisioners": [
@@ -57,9 +56,9 @@
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles='100'",
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads=-1 configs.config.server-config.network-config.transports.transport.tcp.byte-buffer-type=HEAP",
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.min-thread-pool-size=25 configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=350",
-                "wget https://mauer.smeup.com/nexus/content/repositories/releases/com/smeup/WebUP/{{user `webup_release`}}/WebUP-{{user `webup_release`}}.war",
-                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt deploy --contextroot /WebUP WebUP-{{user `webup_release`}}.war",
-                "rm WebUP-{{user `webup_release`}}.war",
+                "wget {{user `war_url`}} -O package.war",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt deploy --contextroot {{user `contextroot`}} package.war",
+                "rm package.war",
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt stop-domain production",
                 "rm *passwordfile* payara-5.181.zip",
                 "chown -R payara.payara {{user `payara_home`}}/payara5"

@@ -7,9 +7,10 @@
     "ssh_password": "XXX",
     "vm_name": "XXX",
     "payara_password": "XXX",
-    "payara_admin": "admin",
+    "payara_admin": "XXX",
     "payara_admin_password": "XXX",
     "payara_home": "/opt/payara",
     "hostname": "XXX",
-    "webup_release": "1.14.6"
+    "war_url": "XXX",
+    "contextroot": "/XXX"
 }
