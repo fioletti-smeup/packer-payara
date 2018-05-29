@@ -58,7 +58,7 @@
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads=-1 configs.config.server-config.network-config.transports.transport.tcp.byte-buffer-type=HEAP",
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.min-thread-pool-size=25 configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=350",
                 "wget {{user `war_url`}} -O package.war",
-                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt deploy --contextroot {{user `contextroot`}} package.war",
+                "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt deploy --name {{user `appName`}} --contextroot {{user `contextroot`}} package.war",
                 "rm package.war",
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt stop-domain production",
                 "rm *passwordfile* payara-5.181.zip",
@@ -69,7 +69,7 @@
     "post-processors": [
         {
             "inline": [
-                "rm {{user `vm_name`}}.ova",
+                "rm -f {{user `vm_name`}}.ova",
                 "/usr/lib/vmware-ovftool/ovftool --shaAlgorithm=SHA1 output-vmware-iso/{{user `vm_name`}}.vmx {{user `vm_name`}}.ova"
             ],
             "type": "shell-local"
