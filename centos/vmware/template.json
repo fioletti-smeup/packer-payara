@@ -31,7 +31,7 @@
             "execute_command": "echo '{{user `ssh_password`}}' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
             "inline": [
                 "yum -y --enablerepo=extras install epel-release",
-                "yum -y install open-vm-tools-10.1.10",
+                "yum -y install open-vm-tools-10.1.10 {{user `additional_packages`}}",
                 "yum -y install java-1.8.0-openjdk-headless-1.8.0.171",
                 "yum -y install wget-1.14",
                 "yum -y install unzip-6.0",

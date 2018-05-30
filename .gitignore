@@ -2,4 +2,3 @@ output-vmware-iso/
 packer_cache/
 *.ova
 vars.json
-
