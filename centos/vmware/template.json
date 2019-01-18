@@ -31,11 +31,11 @@
             "execute_command": "echo '{{user `ssh_password`}}' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
             "inline": [
                 "yum -y --enablerepo=extras install epel-release",
-                "yum -y install open-vm-tools-10.1.10 {{user `additional_packages`}}",
-                "yum -y install java-1.8.0-openjdk-headless-1.8.0.171",
-                "yum -y install wget-1.14",
-                "yum -y install unzip-6.0",
-                "yum -y install avahi-0.6.31",
+                "yum -y install open-vm-tools {{user `additional_packages`}}",
+                "yum -y install java-1.8.0-openjdk-headless",
+                "yum -y install wget",
+                "yum -y install unzip",
+                "yum -y install avahi",
                 "systemctl disable firewalld",
                 "systemctl stop firewalld",
                 "hostnamectl set-hostname {{user `hostname`}}",
@@ -43,8 +43,8 @@
                 "groupadd payara",
                 "useradd -g payara -s /bin/bash -d {{user `payara_home`}} -m payara",
                 "echo 'payara:{{user `payara_password`}}' | chpasswd",
-                "wget http://central.maven.org/maven2/fish/payara/distributions/payara/5.181/payara-5.181.zip",
-                "unzip payara-5.181.zip -d {{user `payara_home`}}",
+                "wget http://central.maven.org/maven2/fish/payara/distributions/payara/5.183/payara-5.183.zip",
+                "unzip payara-5.183.zip -d {{user `payara_home`}}",
                 "{{user `payara_home`}}/payara5/bin/asadmin create-service --serviceuser payara production",
                 "echo 'AS_ADMIN_PASSWORD=' > old_passwordfile.txt",
                 "echo 'AS_ADMIN_NEWPASSWORD={{user `payara_admin_password`}}' >> old_passwordfile.txt",
@@ -62,7 +62,7 @@
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt deploy --name {{user `appName`}} --contextroot {{user `contextroot`}} package.war",
                 "rm package.war",
                 "{{user `payara_home`}}/payara5/bin/asadmin --user admin --passwordfile passwordfile.txt stop-domain production",
-                "rm *passwordfile* payara-5.181.zip",
+                "rm *passwordfile* payara-*.zip",
                 "chown -R payara.payara {{user `payara_home`}}/payara5"
             ]
         }
