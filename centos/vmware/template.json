@@ -9,7 +9,7 @@
             "headless": "{{user `non_gui`}}",
             "boot_wait": "10s",
             "guest_os_type": "otherlinux-64",
-            "disk_size": 131072,
+            "disk_size": "{{user `disk_size`}}",
             "output_directory": "output-vmware-iso",
             "http_directory": "http",
             "boot_command": [
