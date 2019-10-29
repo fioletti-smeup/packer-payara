@@ -7,4 +7,16 @@ write vars.json file and give the command:
 packer build --force -var-file vars.json template.json
 ```
 
-In the same directory there is an example var file.
+or
+
+```shell
+PACKER_LOG=1; PACKER_LOG_PATH="packerlog.txt"; packer build --force -var-file vars.json template.json
+```
+
+if you need a log file.
+
+There is an example var file in the same directory.
+
+TODO
+
+Start payara using systemd
