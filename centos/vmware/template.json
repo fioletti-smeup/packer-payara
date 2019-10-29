@@ -15,10 +15,7 @@
             "boot_command": [
                 "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter>"
             ],
-            "vmx_data": {
-                "memsize": "{{user `memsize`}}",
-                "numvcpus": "{{user `numvcpus`}}"
-            },
+            "memory": "{{user `memsize`}}",
             "ssh_username": "{{user `ssh_username`}}",
             "ssh_password": "{{user `ssh_password`}}",
             "ssh_wait_timeout": "40m",
@@ -43,7 +40,7 @@
                 "groupadd payara",
                 "useradd -g payara -s /bin/bash -d {{user `payara_home`}} -m payara",
                 "echo 'payara:{{user `payara_password`}}' | chpasswd",
-                "wget http://central.maven.org/maven2/fish/payara/distributions/payara/{{user `payara_ver`}}/payara-{{user `payara_ver`}}.zip",
+                "wget https://repo1.maven.org/maven2/fish/payara/distributions/payara/{{user `payara_ver`}}/payara-{{user `payara_ver`}}.zip",
                 "unzip payara-{{user `payara_ver`}}.zip -d {{user `payara_home`}}",
                 "{{user `payara_home`}}/payara5/bin/asadmin create-service --serviceuser payara production",
                 "echo 'AS_ADMIN_PASSWORD=' > old_passwordfile.txt",
